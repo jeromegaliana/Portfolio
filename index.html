@@ -1,250 +1,241 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { 
-  Linkedin, 
-  ChevronRight, 
-  Zap, 
-  Target, 
-  Cpu, 
-  User, 
-  ChevronLeft,
-  ArrowUpRight,
-  Plus,
-  Circle,
-  Hash,
-  Globe,
-  Briefcase,
-  FileText,
-  Mail,
-  Copy,
-  Github
-} from 'lucide-react';
-
-const App = () => {
-  const [activeStep, setActiveStep] = useState(0);
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  const [isChanging, setIsChanging] = useState(false);
-  const [copyStatus, setCopyStatus] = useState('Copy Email');
-  
-  // EDIT THIS DATA TO MATCH YOUR RESUME
-  const journey = [
-    {
-      id: "01",
-      tag: "THE ARCHITECT",
-      title: "Visionary Strategy",
-      desc: "Orchestrating high-impact product roadmaps where scalability meets human-centric design. I transform complex engineering hurdles into seamless market advantages.",
-      details: ["B2B SaaS Specialization", "Market Expansion Strategy", "Cross-functional Leadership"]
-    },
-    {
-      id: "02",
-      tag: "THE TRACK RECORD",
-      title: "Proven Impact",
-      experience: [
-        { role: "Principal PM", org: "Nexus Core", stat: "+15% Velocity", year: "2022-Pres" },
-        { role: "Senior Lead", org: "Vanguard", stat: "Migration Success", year: "2019-22" },
-        { role: "Product Assoc", org: "BlueChip", stat: "40% Retention", year: "2017-19" }
-      ]
-    },
-    {
-      id: "03",
-      tag: "THE ENGINE",
-      title: "Core Expertise",
-      skills: [
-        { label: "Agile Velocity", value: "98", icon: <Zap size={14} /> },
-        { label: "Growth Strategy", value: "95", icon: <Target size={14} /> },
-        { label: "Data Insight", value: "88", icon: <Cpu size={14} /> },
-        { label: "Leadership", value: "92", icon: <User size={14} /> }
-      ]
-    },
-    {
-      id: "04",
-      tag: "THE NEXT PHASE",
-      title: "Collaboration",
-      desc: "Currently based in Québec City, available for strategic leadership roles and high-impact product transformations worldwide.",
-      action: "Initiate Deployment",
-      email: "alex.thompson@example.com",
-      resumeUrl: "https://your-hosting-site.com/my-resume.pdf",
-      githubUrl: "https://github.com/yourusername" // ADD YOUR GITHUB
-    }
-  ];
-
-  useEffect(() => {
-    const handleMove = (e) => {
-      const x = (e.clientX / window.innerWidth - 0.5) * 30;
-      const y = (e.clientY / window.innerHeight - 0.5) * 30;
-      setMousePos({ x, y });
-    };
-    window.addEventListener('mousemove', handleMove);
-    return () => window.removeEventListener('mousemove', handleMove);
-  }, []);
-
-  const navigate = (dir) => {
-    const next = activeStep + dir;
-    if (next >= 0 && next < journey.length) {
-      setIsChanging(true);
-      setTimeout(() => {
-        setActiveStep(next);
-        setIsChanging(false);
-      }, 500);
-    }
-  };
-
-  const handleCopyEmail = () => {
-    const email = journey[3].email;
-    const dummy = document.createElement("input");
-    document.body.appendChild(dummy);
-    dummy.value = email;
-    dummy.select();
-    document.execCommand("copy");
-    document.body.removeChild(dummy);
-    
-    setCopyStatus('Copied!');
-    setTimeout(() => setCopyStatus('Copy Email'), 2000);
-  };
-
-  const current = journey[activeStep];
-
-  return (
-    <div className="min-h-screen bg-[#030303] text-white font-sans overflow-hidden selection:bg-white selection:text-black">
-      
-      {/* Background Parallax */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div 
-          className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-blue-500/10 blur-[140px] rounded-full transition-transform duration-[1500ms] ease-out"
-          style={{ transform: `translate(${mousePos.x * 1.5}px, ${mousePos.y * 1.5}px)` }}
-        />
-        <div 
-          className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-indigo-600/10 blur-[140px] rounded-full transition-transform duration-[1500ms] ease-out"
-          style={{ transform: `translate(${-mousePos.x * 2}px, ${-mousePos.y * 2}px)` }}
-        />
-        <div className="absolute inset-0 opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay"></div>
-        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:40px_40px]"></div>
-      </div>
-
-      {/* Nav */}
-      <nav className="fixed top-0 w-full p-8 md:p-12 flex justify-between items-center z-50">
-        <div className="flex items-center gap-5">
-          <div className="relative group">
-            <div className="w-12 h-12 bg-white flex items-center justify-center rounded-full transition-transform duration-500 group-hover:rotate-90">
-              <div className="w-5 h-5 bg-black rounded-sm rotate-45"></div>
-            </div>
-          </div>
-          <div className="leading-none">
-            <div className="text-[10px] font-black tracking-[0.5em] uppercase opacity-40 mb-1">Strat-Dossier</div>
-            <div className="text-lg font-black tracking-tighter uppercase italic">Alex Thompson</div>
-          </div>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alex Thompson | Portfolio Stratégique</title>
+    <!-- Tailwind CSS pour le style -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Vue.js pour l'interactivité (plus simple que React pour un fichier unique) -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #030303; }
+        .mix-blend-difference { mix-blend-mode: difference; }
+        .stroke-text { -webkit-text-stroke: 1.5px rgba(255,255,255,0.4); color: transparent; }
+    </style>
+</head>
+<body class="text-white overflow-hidden selection:bg-white selection:text-black">
+    <div id="app">
+        <!-- Arrière-plan Parallaxe -->
+        <div class="absolute inset-0 overflow-hidden pointer-events-none">
+            <div class="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-blue-500/10 blur-[140px] rounded-full transition-transform duration-[1500ms] ease-out"
+                 :style="{ transform: `translate(${mousePos.x * 1.5}px, ${mousePos.y * 1.5}px)` }"></div>
+            <div class="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-indigo-600/10 blur-[140px] rounded-full transition-transform duration-[1500ms] ease-out"
+                 :style="{ transform: `translate(${-mousePos.x * 2}px, ${-mousePos.y * 2}px)` }"></div>
+            <div class="absolute inset-0 opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay"></div>
+            <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:40px_40px]"></div>
         </div>
-        <div className="flex items-center gap-4">
-          <a href={journey[3].resumeUrl} target="_blank" rel="noreferrer" className="hidden sm:flex px-6 py-4 bg-white/5 backdrop-blur-md border border-white/10 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all items-center gap-2">
-            <FileText size={14} /> Resume.PDF
-          </a>
-          <a href={journey[3].githubUrl} target="_blank" rel="noreferrer" className="p-4 bg-white/5 backdrop-blur-md border border-white/10 rounded-full hover:bg-white hover:text-black transition-all duration-300">
-            <Github size={20} />
-          </a>
-          <a href="#" className="p-4 bg-white/5 backdrop-blur-md border border-white/10 rounded-full hover:bg-white hover:text-black transition-all duration-300">
-            <Linkedin size={20} />
-          </a>
-        </div>
-      </nav>
 
-      {/* Main Content */}
-      <main className="relative z-10 h-screen flex flex-col justify-center px-8 md:px-24 lg:px-32">
-        <div className={`transition-all duration-700 ease-in-out transform ${isChanging ? 'opacity-0 -translate-y-12 blur-xl' : 'opacity-100 translate-y-0 blur-0'}`}
-          style={{ transform: `translate(${mousePos.x * 0.3}px, ${mousePos.y * 0.3}px)` }}>
-          
-          <div className="flex items-center gap-5 mb-10 translate-x-2">
-            <span className="text-5xl font-black italic tracking-tighter opacity-10 leading-none">{current.id}</span>
-            <div className="h-[2px] w-16 bg-gradient-to-r from-blue-500 to-transparent"></div>
-            <span className="text-[12px] font-black tracking-[0.5em] uppercase text-blue-400 drop-shadow-[0_0_10px_rgba(96,165,250,0.4)]">
-                {current.tag}
-            </span>
-          </div>
-
-          <h1 className="text-7xl md:text-[11rem] font-black tracking-tighter leading-[0.82] uppercase italic mb-14 transition-transform duration-1000">
-            {current.title.split(' ').map((word, i) => (
-              <span key={i} className={i % 2 === 0 ? 'block mix-blend-difference' : 'block text-transparent' } style={{ WebkitTextStroke: i % 2 !== 0 ? '1.5px rgba(255,255,255,0.4)' : 'none' }}>
-                {word}
-              </span>
-            ))}
-          </h1>
-
-          <div className="max-w-4xl relative">
-            {current.desc && (
-              <p className="text-2xl md:text-4xl font-light text-white/70 leading-tight mb-14 max-w-2xl border-l-2 border-white/5 pl-8 italic">
-                {current.desc}
-              </p>
-            )}
-
-            {current.experience && (
-              <div className="grid md:grid-cols-3 gap-6">
-                {current.experience.map((exp, i) => (
-                  <div key={i} className="group p-10 bg-white/5 border border-white/5 backdrop-blur-lg rounded-[2.5rem] hover:bg-white hover:text-black transition-all duration-700 cursor-default relative overflow-hidden">
-                    <div className="text-[10px] font-black uppercase tracking-widest mb-6 opacity-40 group-hover:opacity-100 flex justify-between items-center">
-                        <span>{exp.org}</span>
-                        <span>{exp.year}</span>
+        <!-- Navigation -->
+        <nav class="fixed top-0 w-full p-8 md:p-12 flex justify-between items-center z-50">
+            <div class="flex items-center gap-5">
+                <div class="relative group">
+                    <div class="w-12 h-12 bg-white flex items-center justify-center rounded-full transition-transform duration-500 group-hover:rotate-90">
+                        <div class="w-5 h-5 bg-black rounded-sm rotate-45"></div>
                     </div>
-                    <div className="text-3xl font-black italic mb-3 tracking-tighter uppercase leading-none">{exp.role}</div>
-                    <div className="text-[12px] font-black text-blue-500 group-hover:text-black mt-4 flex items-center gap-2">
-                        <Zap size={14} fill="currentColor"/> {exp.stat}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {current.skills && (
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                {current.skills.map((skill, i) => (
-                  <div key={i} className="p-10 border border-white/5 bg-white/[0.02] rounded-[3rem] flex flex-col items-center justify-center text-center group hover:border-white/20 hover:bg-white/5 transition-all duration-500">
-                    <div className="mb-8 opacity-40 group-hover:opacity-100 text-blue-400">{skill.icon}</div>
-                    <div className="text-[11px] font-black uppercase tracking-[0.2em] mb-3 opacity-40 group-hover:opacity-100">{skill.label}</div>
-                    <div className="text-5xl font-black italic tracking-tighter">{skill.value}%</div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {current.action && (
-              <div className="flex flex-col md:flex-row items-start md:items-center gap-8">
-                <button onClick={handleCopyEmail} className="group flex items-center gap-8 p-3 pr-14 bg-white text-black rounded-full hover:scale-105 transition-all duration-700 shadow-[0_0_40px_rgba(255,255,255,0.2)]">
-                    <div className="w-16 h-16 bg-black text-white rounded-full flex items-center justify-center group-hover:rotate-12 transition-transform">
-                      {copyStatus === 'Copied!' ? <Copy size={28} /> : <Mail size={28} />}
-                    </div>
-                    <span className="text-2xl font-black uppercase italic tracking-tighter">{copyStatus === 'Copied!' ? 'Email Copied' : current.action}</span>
-                </button>
-                <div className="flex flex-col">
-                  <div className="flex items-center gap-4 text-white/40 font-black text-[10px] uppercase tracking-widest mb-1">
-                      <Globe size={16} className="text-blue-500" /> Québec City // Remote
-                  </div>
-                  <div className="text-[12px] font-mono text-white/60">{current.email}</div>
                 </div>
-              </div>
-            )}
-          </div>
-        </div>
-      </main>
+                <div class="leading-none">
+                    <div class="text-[10px] font-black tracking-[0.5em] uppercase opacity-40 mb-1">Strat-Dossier</div>
+                    <div class="text-lg font-black tracking-tighter uppercase italic">Alex Thompson</div>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <a :href="journey[3].resumeUrl" target="_blank" class="hidden sm:flex px-6 py-4 bg-white/5 backdrop-blur-md border border-white/10 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all items-center gap-2">
+                    <i data-lucide="file-text" class="w-4 h-4"></i> Resume.PDF
+                </a>
+                <a :href="journey[3].githubUrl" target="_blank" class="p-4 bg-white/5 backdrop-blur-md border border-white/10 rounded-full hover:bg-white hover:text-black transition-all duration-300">
+                    <i data-lucide="github" class="w-5 h-5"></i>
+                </a>
+            </div>
+        </nav>
 
-      {/* Footer Nav */}
-      <footer className="fixed bottom-0 w-full p-10 md:p-14 flex justify-between items-end z-50">
-        <div className="flex gap-3 mb-4">
-          {journey.map((_, i) => (
-            <div key={i} onClick={() => {setActiveStep(i); setIsChanging(true); setTimeout(() => setIsChanging(false), 500);}}
-              className={`h-2 cursor-pointer transition-all duration-1000 rounded-full ${i === activeStep ? 'w-24 bg-blue-500' : 'w-4 bg-white/10 hover:bg-white/30'}`}
-            />
-          ))}
-        </div>
-        <div className="flex gap-6">
-          <button disabled={activeStep === 0} onClick={() => navigate(-1)}
-            className={`w-20 h-20 rounded-full border border-white/10 backdrop-blur-md flex items-center justify-center hover:bg-white hover:text-black transition-all duration-500 ${activeStep === 0 ? 'opacity-0 scale-50' : 'opacity-100 scale-100'}`}>
-            <ChevronLeft size={28} />
-          </button>
-          <button disabled={activeStep === journey.length - 1} onClick={() => navigate(1)}
-            className={`w-20 h-20 rounded-full bg-white text-black flex items-center justify-center hover:scale-110 shadow-2xl transition-all duration-500 ${activeStep === journey.length - 1 ? 'opacity-0 scale-50' : 'opacity-100 scale-100'}`}>
-            <ChevronRight size={28} />
-          </button>
-        </div>
-      </footer>
+        <!-- Contenu Principal -->
+        <main class="relative z-10 h-screen flex flex-col justify-center px-8 md:px-24 lg:px-32">
+            <div :class="['transition-all duration-700 ease-in-out transform', isChanging ? 'opacity-0 -translate-y-12 blur-xl' : 'opacity-100 translate-y-0 blur-0']"
+                 :style="{ transform: `translate(${mousePos.x * 0.3}px, ${mousePos.y * 0.3}px)` }">
+                
+                <div class="flex items-center gap-5 mb-10 translate-x-2">
+                    <span class="text-5xl font-black italic tracking-tighter opacity-10 leading-none">{{ current.id }}</span>
+                    <div class="h-[2px] w-16 bg-gradient-to-r from-blue-500 to-transparent"></div>
+                    <span class="text-[12px] font-black tracking-[0.5em] uppercase text-blue-400 drop-shadow-[0_0_10px_rgba(96,165,250,0.4)]">
+                        {{ current.tag }}
+                    </span>
+                </div>
+
+                <h1 class="text-7xl md:text-[9rem] lg:text-[11rem] font-black tracking-tighter leading-[0.82] uppercase italic mb-14">
+                    <span v-for="(word, i) in current.title.split(' ')" :key="i" 
+                          :class="[i % 2 === 0 ? 'block mix-blend-difference' : 'block stroke-text']">
+                        {{ word }}
+                    </span>
+                </h1>
+
+                <div class="max-w-4xl relative">
+                    <p v-if="current.desc" class="text-2xl md:text-4xl font-light text-white/70 leading-tight mb-14 max-w-2xl border-l-2 border-white/5 pl-8 italic">
+                        {{ current.desc }}
+                    </p>
+
+                    <div v-if="current.experience" class="grid md:grid-cols-3 gap-6">
+                        <div v-for="(exp, i) in current.experience" :key="i" class="group p-10 bg-white/5 border border-white/5 backdrop-blur-lg rounded-[2.5rem] hover:bg-white hover:text-black transition-all duration-700 cursor-default relative overflow-hidden">
+                            <div class="text-[10px] font-black uppercase tracking-widest mb-6 opacity-40 group-hover:opacity-100 flex justify-between items-center">
+                                <span>{{ exp.org }}</span>
+                                <span>{{ exp.year }}</span>
+                            </div>
+                            <div class="text-3xl font-black italic mb-3 tracking-tighter uppercase leading-none">{{ exp.role }}</div>
+                            <div class="text-[12px] font-black text-blue-500 group-hover:text-black mt-4 flex items-center gap-2">
+                                <i data-lucide="zap" class="w-4 h-4 fill-current"></i> {{ exp.stat }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div v-if="current.skills" class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                        <div v-for="(skill, i) in current.skills" :key="i" class="p-10 border border-white/5 bg-white/[0.02] rounded-[3rem] flex flex-col items-center justify-center text-center group hover:border-white/20 hover:bg-white/5 transition-all duration-500">
+                            <div class="mb-8 opacity-40 group-hover:opacity-100 text-blue-400">
+                                <i :data-lucide="skill.iconName" class="w-6 h-6"></i>
+                            </div>
+                            <div class="text-[11px] font-black uppercase tracking-[0.2em] mb-3 opacity-40 group-hover:opacity-100">{{ skill.label }}</div>
+                            <div class="text-5xl font-black italic tracking-tighter">{{ skill.value }}%</div>
+                        </div>
+                    </div>
+
+                    <div v-if="current.action" class="flex flex-col md:flex-row items-start md:items-center gap-8">
+                        <button @click="handleCopyEmail" class="group flex items-center gap-8 p-3 pr-14 bg-white text-black rounded-full hover:scale-105 transition-all duration-700 shadow-[0_0_40px_rgba(255,255,255,0.2)]">
+                            <div class="w-16 h-16 bg-black text-white rounded-full flex items-center justify-center group-hover:rotate-12 transition-transform">
+                                <i :data-lucide="copyStatus === 'Copié !' ? 'copy' : 'mail'" class="w-7 h-7"></i>
+                            </div>
+                            <span class="text-2xl font-black uppercase italic tracking-tighter">{{ copyStatus === 'Copié !' ? 'Email Copié' : current.action }}</span>
+                        </button>
+                        <div class="flex flex-col">
+                            <div class="flex items-center gap-4 text-white/40 font-black text-[10px] uppercase tracking-widest mb-1">
+                                <i data-lucide="globe" class="w-4 h-4 text-blue-500"></i> Québec City // Remote
+                            </div>
+                            <div class="text-[12px] font-mono text-white/60">{{ current.email }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Navigation Bas de Page -->
+        <footer class="fixed bottom-0 w-full p-10 md:p-14 flex justify-between items-end z-50">
+            <div class="flex gap-3 mb-4">
+                <div v-for="(_, i) in journey" :key="i" @click="jumpToStep(i)"
+                    :class="['h-2 cursor-pointer transition-all duration-1000 rounded-full', i === activeStep ? 'w-24 bg-blue-500' : 'w-4 bg-white/10 hover:bg-white/30']">
+                </div>
+            </div>
+            <div class="flex gap-6">
+                <button :disabled="activeStep === 0" @click="navigate(-1)"
+                    :class="['w-20 h-20 rounded-full border border-white/10 backdrop-blur-md flex items-center justify-center hover:bg-white hover:text-black transition-all duration-500', activeStep === 0 ? 'opacity-0 scale-50' : 'opacity-100 scale-100']">
+                    <i data-lucide="chevron-left" class="w-7 h-7"></i>
+                </button>
+                <button :disabled="activeStep === journey.length - 1" @click="navigate(1)"
+                    :class="['w-20 h-20 rounded-full bg-white text-black flex items-center justify-center hover:scale-110 shadow-2xl transition-all duration-500', activeStep === journey.length - 1 ? 'opacity-0 scale-50' : 'opacity-100 scale-100']">
+                    <i data-lucide="chevron-right" class="w-7 h-7"></i>
+                </button>
+            </div>
+        </footer>
     </div>
-  );
-};
 
-export default App;
+    <script>
+        const { createApp, ref, computed, onMounted } = Vue;
+
+        createApp({
+            setup() {
+                const activeStep = ref(0);
+                const mousePos = ref({ x: 0, y: 0 });
+                const isChanging = ref(false);
+                const copyStatus = ref('Copier Email');
+
+                const journey = [
+                    {
+                        id: "01",
+                        tag: "L'ARCHITECTE",
+                        title: "Vision Stratégique",
+                        desc: "Chef d'orchestre de roadmaps produits à fort impact où l'évolutivité rencontre le design humain. Je transforme les défis techniques en avantages marchés.",
+                    },
+                    {
+                        id: "02",
+                        tag: "RÉSULTATS",
+                        title: "Impact Prouvé",
+                        experience: [
+                            { role: "Principal PM", org: "Nexus Core", stat: "+15% Vélocité", year: "2022-Pres" },
+                            { role: "Senior Lead", org: "Vanguard", stat: "Migration Réussie", year: "2019-22" },
+                            { role: "Product Assoc", org: "BlueChip", stat: "40% Rétention", year: "2017-19" }
+                        ]
+                    },
+                    {
+                        id: "03",
+                        tag: "LE MOTEUR",
+                        title: "Expertise Clé",
+                        skills: [
+                            { label: "Agile Velocity", value: "98", iconName: "zap" },
+                            { label: "Stratégie", value: "95", iconName: "target" },
+                            { label: "Data Insight", value: "88", iconName: "cpu" },
+                            { label: "Leadership", value: "92", iconName: "user" }
+                        ]
+                    },
+                    {
+                        id: "04",
+                        tag: "PROCHAINE PHASE",
+                        title: "Collaboration",
+                        desc: "Basé à Québec, disponible pour des rôles de leadership stratégique et des transformations produits à l'échelle mondiale.",
+                        action: "Initier Déploiement",
+                        email: "votre.email@exemple.com",
+                        resumeUrl: "#",
+                        githubUrl: "https://github.com"
+                    }
+                ];
+
+                const current = computed(() => journey[activeStep.value]);
+
+                const navigate = (dir) => {
+                    const next = activeStep.value + dir;
+                    if (next >= 0 && next < journey.length) {
+                        isChanging.value = true;
+                        setTimeout(() => {
+                            activeStep.value = next;
+                            isChanging.value = false;
+                            setTimeout(() => lucide.createIcons(), 10);
+                        }, 500);
+                    }
+                };
+
+                const jumpToStep = (index) => {
+                    isChanging.value = true;
+                    setTimeout(() => {
+                        activeStep.value = index;
+                        isChanging.value = false;
+                        setTimeout(() => lucide.createIcons(), 10);
+                    }, 500);
+                };
+
+                const handleCopyEmail = () => {
+                    const el = document.createElement('textarea');
+                    el.value = journey[3].email;
+                    document.body.appendChild(el);
+                    el.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(el);
+                    
+                    copyStatus.value = 'Copié !';
+                    setTimeout(() => copyStatus.value = 'Copier Email', 2000);
+                };
+
+                onMounted(() => {
+                    lucide.createIcons();
+                    window.addEventListener('mousemove', (e) => {
+                        mousePos.value = {
+                            x: (e.clientX / window.innerWidth - 0.5) * 30,
+                            y: (e.clientY / window.innerHeight - 0.5) * 30
+                        };
+                    });
+                });
+
+                return { activeStep, mousePos, isChanging, copyStatus, journey, current, navigate, jumpToStep, handleCopyEmail };
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
