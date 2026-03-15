@@ -133,7 +133,7 @@ export default function Home() {
       </main>
 
       <footer className="border-t border-zinc-800 mt-16 py-6 text-center text-zinc-600 text-sm">
-        ClassicParts AI — Propulsé par Claude Opus 4.6
+        ClassicParts AI — Propulsé par Groq · Llama 3.3 70B
       </footer>
     </div>
   );

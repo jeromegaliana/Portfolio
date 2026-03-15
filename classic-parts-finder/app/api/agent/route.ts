@@ -1,10 +1,9 @@
-import Anthropic from "@anthropic-ai/sdk";
-
-const client = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-});
+import Groq from "groq-sdk";
 
 export async function POST(request: Request) {
+  const client = new Groq({
+    apiKey: process.env.GROQ_API_KEY,
+  });
   const { make, model, year, query } = await request.json();
 
   if (!make || !model || !year) {
@@ -15,63 +14,74 @@ export async function POST(request: Request) {
 
   const carDescription = `${year} ${make} ${model}`;
 
-  const systemPrompt = `You are an expert on classic and vintage cars, with deep knowledge of parts sourcing, restoration, and technical specifications.
-You help enthusiasts find parts and information for their vintage vehicles.
-Always respond in the same language as the user's query.
-When listing links or sources, always format them as markdown links: [Site Name](URL).
-Organize your findings into clear sections.`;
+  const systemPrompt = `Tu es un expert en voitures anciennes et classiques, avec une connaissance approfondie des pièces détachées, de la restauration et des spécifications techniques.
+Tu aides les passionnés à trouver des pièces et des informations pour leurs véhicules vintage.
+Réponds toujours en français.
+Quand tu listes des sites ou ressources, formate-les en liens markdown : [Nom du site](URL).
+Organise ta réponse en sections claires avec des titres.
+Fournis des URLs réelles et connues pour les fournisseurs de pièces, forums et clubs automobiles.`;
 
   const userMessage =
     query ||
-    `I need comprehensive information about the ${carDescription}. Please:
-1. Provide key technical specifications (engine, transmission, dimensions, weight, performance)
-2. List known weaknesses and common issues to watch for
-3. Search the web for the best places to buy parts for this car, including:
-   - Specialized parts suppliers (online shops)
-   - Owner clubs and forums
-   - Classified ads / marketplaces
-   - French and European suppliers if available
-   - Specialty salvage yards
+    `Je cherche des informations complètes sur la ${carDescription}. Merci de me fournir :
 
-Format the parts sources as clickable links with a brief description of each.`;
+## 1. Fiche technique
+- Moteur, cylindrée, puissance
+- Boîte de vitesses
+- Dimensions et poids
+- Performances (0-100, vitesse max)
+
+## 2. Points faibles & problèmes connus
+- Les zones de rouille typiques
+- Problèmes mécaniques récurrents
+- Pièces difficiles à trouver
+
+## 3. Où trouver des pièces détachées
+Liste les meilleures sources avec des liens :
+- Fournisseurs spécialisés en ligne (France & Europe)
+- Clubs de propriétaires et forums
+- Sites de petites annonces (Leboncoin, eBay Motors, etc.)
+- Casses spécialisées
+
+Sois précis et fournis des URLs réelles quand tu les connais.`;
 
   const encoder = new TextEncoder();
 
   const stream = new ReadableStream({
     async start(controller) {
       try {
-        const response = await client.messages.create({
-          model: "claude-opus-4-6",
+        const response = await client.chat.completions.create({
+          model: "llama-3.3-70b-versatile",
           max_tokens: 4096,
-          thinking: { type: "adaptive" },
-          system: systemPrompt,
-          tools: [
-            {
-              type: "web_search_20260209",
-              name: "web_search",
-            },
+          temperature: 0.3,
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: userMessage },
           ],
-          messages: [{ role: "user", content: userMessage }],
           stream: true,
         });
 
-        for await (const event of response) {
-          if (
-            event.type === "content_block_delta" &&
-            event.delta.type === "text_delta"
-          ) {
-            const chunk = JSON.stringify({ type: "text", text: event.delta.text });
-            controller.enqueue(encoder.encode(`data: ${chunk}\n\n`));
+        for await (const chunk of response) {
+          const text = chunk.choices[0]?.delta?.content ?? "";
+          if (text) {
+            controller.enqueue(
+              encoder.encode(
+                `data: ${JSON.stringify({ type: "text", text })}\n\n`
+              )
+            );
           }
-
-          if (event.type === "message_stop") {
-            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: "done" })}\n\n`));
+          if (chunk.choices[0]?.finish_reason === "stop") {
+            controller.enqueue(
+              encoder.encode(`data: ${JSON.stringify({ type: "done" })}\n\n`)
+            );
           }
         }
       } catch (error) {
         const errMsg = error instanceof Error ? error.message : "Unknown error";
         controller.enqueue(
-          encoder.encode(`data: ${JSON.stringify({ type: "error", message: errMsg })}\n\n`)
+          encoder.encode(
+            `data: ${JSON.stringify({ type: "error", message: errMsg })}\n\n`
+          )
         );
       } finally {
         controller.close();
